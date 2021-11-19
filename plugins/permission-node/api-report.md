@@ -8,7 +8,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentity } from '@backstage/plugin-auth-backend';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-import { Router } from 'express';
+import { Router } from 'express-serve-static-core';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -17,6 +17,8 @@ export type ApplyConditionsRequest = {
   conditions: PermissionCriteria<PermissionCondition>;
 };
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCondition"
+//
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
   any,
@@ -36,14 +38,8 @@ export type ConditionalPolicyResult = {
   };
 };
 
-// @public
-export const conditionFor: <TParams extends any[]>(
-  rule: PermissionRule<unknown, unknown, TParams>,
-) => (...params: TParams) => {
-  rule: string;
-  params: TParams;
-};
-
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCondition"
+//
 // @public
 export type Conditions<
   TRules extends Record<string, PermissionRule<any, any>>,
@@ -51,41 +47,64 @@ export type Conditions<
   [Name in keyof TRules]: Condition<TRules[Name]>;
 };
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCondition"
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCriteria"
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCondition"
+//
 // @public
-export const createPermissionIntegration: <
+export type ConditionTransformer<TQuery> = (
+  conditions: PermissionCriteria<PermissionCondition>,
+) => PermissionCriteria<TQuery>;
+
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-permission-node" does not have an export "PermissionCondition"
+//
+// @public
+export const createConditionExports: <
   TResource,
-  TRules extends {
-    [key: string]: PermissionRule<TResource, any, unknown[]>;
-  },
-  TGetResourceParams extends any[] = [],
+  TRules extends Record<string, PermissionRule<TResource, any, unknown[]>>,
 >({
   pluginId,
   resourceType,
   rules,
-  getResource,
 }: {
   pluginId: string;
   resourceType: string;
   rules: TRules;
-  getResource: (
-    resourceRef: string,
-    ...params: TGetResourceParams
-  ) => Promise<TResource | undefined>;
 }) => {
-  createPermissionIntegrationRouter: (...params: TGetResourceParams) => Router;
-  toQuery: (
-    conditions: PermissionCriteria<PermissionCondition>,
-  ) => PermissionCriteria<QueryType<TRules>>;
   conditions: Conditions<TRules>;
   createConditions: (conditions: PermissionCriteria<PermissionCondition>) => {
     pluginId: string;
     resourceType: string;
     conditions: PermissionCriteria<PermissionCondition>;
   };
-  registerPermissionRule: (
-    rule: PermissionRule<TResource, QueryType<TRules>, unknown[]>,
-  ) => void;
 };
+
+// @public
+export const createConditionFactory: <TParams extends any[]>(
+  rule: PermissionRule<unknown, unknown, TParams>,
+) => (...params: TParams) => {
+  rule: string;
+  params: TParams;
+};
+
+// @public
+export const createConditionTransformer: <
+  TQuery,
+  TRules extends PermissionRule<any, TQuery, unknown[]>[],
+>(
+  permissionRules: [...TRules],
+) => ConditionTransformer<TQuery>;
+
+// @public
+export const createPermissionIntegrationRouter: <TResource>({
+  resourceType,
+  rules,
+  getResource,
+}: {
+  resourceType: string;
+  rules: PermissionRule<TResource, any, unknown[]>[];
+  getResource: (resourceRef: string) => Promise<TResource | undefined>;
+}) => Router;
 
 // @public
 export interface PermissionPolicy {
@@ -117,12 +136,4 @@ export type PolicyResult =
       result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
     }
   | ConditionalPolicyResult;
-
-// @public
-export type QueryType<TRules> = TRules extends Record<
-  string,
-  PermissionRule<any, infer TQuery, any>
->
-  ? TQuery
-  : never;
 ```

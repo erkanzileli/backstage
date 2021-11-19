@@ -32,12 +32,13 @@
   "dependencies": {
     "@backstage/plugin-auth-backend": "^0.4.6",
     "@backstage/plugin-permission-common": "^0.1.0",
-    "@types/express": "*",
     "express": "^4.17.1",
     "zod": "^3.11.6"
   },
   "devDependencies": {
     "@backstage/cli": "^0.9.0",
+    "@types/express": "*",
+    "@types/express-serve-static-core": "^4.17.5",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3"
   },
