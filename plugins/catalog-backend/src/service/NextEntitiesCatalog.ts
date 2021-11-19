@@ -24,6 +24,7 @@ import {
   AuthorizeResult,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
+import { toQuery } from '@backstage/plugin-permission-node';
 import { Knex } from 'knex';
 import {
   EntitiesCatalog,
@@ -34,7 +35,6 @@ import {
   EntityFilter,
   EntitiesSearchFilter,
 } from '../catalog/types';
-import { toQuery } from '../permissions';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
@@ -42,6 +42,7 @@ import {
   DbSearchRow,
   DbPageInfo,
 } from '../database/tables';
+import { CatalogPermissionRule } from '../permissions/types';
 
 function parsePagination(input?: EntityPagination): {
   limit?: number;
@@ -168,6 +169,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly database: Knex,
     private readonly permissionApi: PermissionClient,
+    private readonly permissionRules: Record<string, CatalogPermissionRule>,
   ) {}
 
   async entities(
@@ -199,7 +201,10 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
           // TODO(mtlewis): remove casting once
           // https://github.com/backstage/backstage/pull/7817
           // is merged.
-          toQuery(authorizeResponse.conditions) as EntityFilter,
+          toQuery(
+            authorizeResponse.conditions,
+            this.permissionRules,
+          ) as EntityFilter,
           entitiesQuery,
           db,
         );
