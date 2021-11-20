@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.4.5
+
+### Patch Changes
+
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+
 ## 0.4.4
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.9.1
+
+### Patch Changes
+
+- ee055cf6db: Update the default routes to use id instead of title
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
 ## 0.9.0
 
 ### Minor Changes
